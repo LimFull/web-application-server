@@ -4,6 +4,12 @@
     <title>WEB1-html</title>
     <meta charset="utf-8">
     <style>
+    #active{
+      color: red;
+    }
+    .saw{
+      color: gray;
+    }
     a{
       color : black;
       text-decoration : none;
@@ -17,13 +23,13 @@
   <body>
     <h1><a href="full.html">WEB</a></h1>
     <ol>
-      <li><a href="1.html" style="color:red; text-decoration:underline;">HTML</a></li>
-      <li><a href="2.html">CSS</a></li>
-      <li><a href="3.html">JavaScript</a></li>
+      <li><a href="1.html" class="saw" id="active">HTML</a></li>
+      <li><a href="2.html" class="saw">CSS</a></li>
+      <li><a href="3.html" class="saw">JavaScript</a></li>
     </ol>
 
     <h2>HTML이란 무엇인가</h2>
     웹 백엔드 개발자가 되기 위한 <strong><u>초석</u></strong>을 다지자.
-    <p style = "margin-top:40px;">가나다라마바사</p><img src="./unsplash.jpg" width = "50%"><p><a href="https://codingfull.tistory.com" target="_blank" title="블로그로 이동합니다.">코딩이 가득한 코딩노트</a></p>
+    <p style = "margin-top:40px;">가나다라마바사</p><img src="./unsplash.jpg" width = "50%"><p><a href="https://codingfull.tistory.com" target="_blank" title="블로그로 이동합니다." style="text-decoration : underline; color:blue;">코딩이 가득한 코딩노트</a></p>
   </body>
 </html>
