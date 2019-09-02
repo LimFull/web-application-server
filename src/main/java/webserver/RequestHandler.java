@@ -46,7 +46,11 @@ public class RequestHandler extends Thread {
             DataOutputStream dos = new DataOutputStream(out);
             byte[] body = Files.readAllBytes(new File("./webapp"+tokens[1]).toPath());
             //byte[] body = "라즈베리로봇 서버".getBytes();
-            response200Header(dos, body.length);
+            if (tokens[1].endsWith(".css")) {
+            	response200HeaderCss(dos, body.length);
+            }else {
+            	response200Header(dos, body.length);
+            }
             responseBody(dos, body);
         } catch (IOException e) {
             log.error(e.getMessage());
@@ -63,7 +67,16 @@ public class RequestHandler extends Thread {
             log.error(e.getMessage());
         }
     }
-
+    private void response200HeaderCss(DataOutputStream dos, int lengthOfBodyContent) {
+        try {
+            dos.writeBytes("HTTP/1.1 200 OK \r\n");
+            dos.writeBytes("Content-Type: text/css;charset=utf-8\r\n");
+            dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
+            dos.writeBytes("\r\n");
+        } catch (IOException e) {
+            log.error(e.getMessage());
+        }
+    }
     private void responseBody(DataOutputStream dos, byte[] body) {
         try {
             dos.write(body, 0, body.length);
