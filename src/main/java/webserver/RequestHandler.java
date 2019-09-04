@@ -46,36 +46,34 @@ public class RequestHandler extends Thread {
             DataOutputStream dos = new DataOutputStream(out);
             byte[] body = Files.readAllBytes(new File("./webapp"+tokens[1]).toPath());
             //byte[] body = "라즈베리로봇 서버".getBytes();
-            if (tokens[1].endsWith(".css")) {
-            	response200HeaderCss(dos, body.length);
-            }else {
-            	response200Header(dos, body.length);
-            }
+            response200Header(dos, body.length, tokens[1]);
             responseBody(dos, body);
         } catch (IOException e) {
             log.error(e.getMessage());
         }
     }
 
-    private void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
-        try {
-            dos.writeBytes("HTTP/1.1 200 OK \r\n");
-            dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
-            dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
-            dos.writeBytes("\r\n");
-        } catch (IOException e) {
-            log.error(e.getMessage());
-        }
-    }
-    private void response200HeaderCss(DataOutputStream dos, int lengthOfBodyContent) {
-        try {
-            dos.writeBytes("HTTP/1.1 200 OK \r\n");
-            dos.writeBytes("Content-Type: text/css;charset=utf-8\r\n");
-            dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
-            dos.writeBytes("\r\n");
-        } catch (IOException e) {
-            log.error(e.getMessage());
-        }
+    private void response200Header(DataOutputStream dos, int lengthOfBodyContent, String token) {
+    	try {
+	    	if (token.endsWith(".css")){
+		     
+		            dos.writeBytes("HTTP/1.1 200 OK \r\n");
+		            dos.writeBytes("Content-Type: text/css;charset=utf-8\r\n");
+		            dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
+		            dos.writeBytes("\r\n");
+		       
+	    	}
+	    	else {
+	    		
+	    		dos.writeBytes("HTTP/1.1 200 OK \r\n");
+	            dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
+	            dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
+	            dos.writeBytes("\r\n");
+	    	}
+
+	    }catch (IOException e) {
+    		log.error(e.getMessage());
+    	}
     }
     private void responseBody(DataOutputStream dos, byte[] body) {
         try {
