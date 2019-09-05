@@ -9,9 +9,13 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.File;
 import java.nio.file.Files;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import util.HttpRequestUtils;
+import model.User;
 
 public class RequestHandler extends Thread {
     private static final Logger log = LoggerFactory.getLogger(RequestHandler.class);
@@ -42,12 +46,20 @@ public class RequestHandler extends Thread {
         		line = br.readLine();
         		log.debug("header : {}", line);
         	}
-        	
-            DataOutputStream dos = new DataOutputStream(out);
-            byte[] body = Files.readAllBytes(new File("./webapp"+tokens[1]).toPath());
-            //byte[] body = "라즈베리로봇 서버".getBytes();
-            response200Header(dos, body.length, tokens[1]);
-            responseBody(dos, body);
+        	String url = tokens[1];
+        	if (url.startsWith("/user/create")) {
+        		int index = url.indexOf("?");
+        		String queryString = url.substring(index+1);
+        		Map<String, String> params = HttpRequestUtils.parseQueryString(queryString);
+        		User user = new User(params.get("userId"), params.get("password"), params.get("name"), params.get("email"));
+        		log.debug("User : {}", user);
+        	}else {
+	            DataOutputStream dos = new DataOutputStream(out);
+	            byte[] body = Files.readAllBytes(new File("./webapp"+url).toPath());
+	            //byte[] body = "라즈베리로봇 서버".getBytes();
+	            response200Header(dos, body.length, tokens[1]);
+	            responseBody(dos, body);
+        	}
         } catch (IOException e) {
             log.error(e.getMessage());
         }
