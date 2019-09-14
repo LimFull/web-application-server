@@ -14,6 +14,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import db.DataBase;
 import util.HttpRequestUtils;
 import util.IOUtils;
 import model.User;
@@ -61,11 +62,29 @@ public class RequestHandler extends Thread {
         		Map<String, String> params = HttpRequestUtils.parseQueryString(body);
         		User user = new User(params.get("userId"), params.get("password"), params.get("name"), params.get("email"));
         		log.debug("User : {}", user);
+        		DataBase.addUser(user);
+        		
         		DataOutputStream dos = new DataOutputStream(out);
         		response302Header(dos, "/index.html");
         		
+        	}else if (url.contentEquals("/user/login")){
+        		String body = IOUtils.readData(br, contentLength);
+        		Map<String, String> params = HttpRequestUtils.parseQueryString(body);
+        		User user = DataBase.findUserById(params.get("userId"));
+        		if (user == null) {
+        			responseResource(out, "/user/login_failed.html");
+        			return;
+        		}
         		
-        	} else{
+        		if (user.getPassword().equals(params.get("password"))){
+        			DataOutputStream dos = new DataOutputStream(out);
+        			response302LoginSuccessHeader(dos);
+        		}else {
+        			responseResource(out,"/user/login_failed.html");
+        		}
+        		
+        	}
+        	else{
 	            DataOutputStream dos = new DataOutputStream(out);
 	            byte[] body = Files.readAllBytes(new File("./webapp"+url).toPath());
 	            //byte[] body = "라즈베리로봇 서버".getBytes();
@@ -76,6 +95,25 @@ public class RequestHandler extends Thread {
             log.error(e.getMessage());
         }
     }
+    
+    private void response302LoginSuccessHeader(DataOutputStream dos) {
+    	try {
+            dos.writeBytes("HTTP/1.1 302 Redirect\r\n");
+            dos.writeBytes("Set_Cookie: logined=true\r\n");
+            dos.writeBytes("Location: /index.html\r\n");
+            dos.writeBytes("\r\n");
+	    }catch (IOException e) {
+    		log.error(e.getMessage());
+    	}
+    }
+    
+    private void responseResource(OutputStream out, String url) throws IOException {
+    	DataOutputStream dos = new DataOutputStream(out);
+    	byte[] body = Files.readAllBytes(new File("./webapp" + url).toPath());
+    	response200Header(dos, body.length, url);
+    	responseBody(dos, body);
+    }
+    
     private int getContentLength(String content) {
     	String[] lengthTokens = content.split(":");
     	return Integer.parseInt(lengthTokens[1].trim());
@@ -91,9 +129,9 @@ public class RequestHandler extends Thread {
     	}
 
     }
-    private void response200Header(DataOutputStream dos, int lengthOfBodyContent, String token) {
+    private void response200Header(DataOutputStream dos, int lengthOfBodyContent, String url) {
     	try {
-	    	if (token.endsWith(".css")){
+	    	if (url.endsWith(".css")){
 		     
 		            dos.writeBytes("HTTP/1.1 200 OK \r\n");
 		            dos.writeBytes("Content-Type: text/css;charset=utf-8\r\n");
