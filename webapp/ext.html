@@ -1,0 +1,74 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>WEB1-css</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  </head>
+  <body>
+    <h1><a href="full.html">WEB</a></h1>
+    <input type="button" value="night" onclick="
+    var target = document.querySelector('body')
+    var i = 0;
+    var alist = document.querySelectorAll('a');
+      if (this.value == 'night'){
+        while (i < alist.length){
+          alist[i].style.color='powderblue';
+          console.log(alist[i])
+          i++;
+        }
+
+        target.style.backgroundColor='black';
+        target.style.color='white';
+        this.value = 'day';
+      } else{
+        while (i < alist.length){
+          alist[i].style.color='blue';
+          console.log(alist[i])
+          i++;
+        }
+        target.style.backgroundColor='white';
+        target.style.color='black';
+        this.value = 'night';
+      }
+        ">
+    <div id="grid">
+      <ol>
+        <li><a href="1.html" class="saw">HTML</a></li>
+        <li><a href="2.html" class="saw" id="active">CSS</a></li>
+        <li><a href="3.html" class="saw">JavaScript</a></li>
+      </ol>
+      <div id="article">
+        <h2>CSS란 무엇인가</h2>
+        <p>언제 다하지</p><img src="./unsplash.jpg" width = "50%">
+      </div>
+    </div>
+    <p style="margin-top: 20px;"><a href="http://codingfull.tistory.com" target="_blank" title="Move to Blog" style="text-decoration : underline; color:black; font-size:small;">코딩이 가득한 코딩노트</a></p>
+    <input type="button" value="night" onclick="
+    var target = document.querySelector('body')
+    var i = 0;
+    var alist = document.querySelectorAll('a');
+      if (this.value == 'night'){
+        while (i < alist.length){
+          alist[i].style.color='powderblue';
+          console.log(alist[i])
+          i++;
+        }
+
+        target.style.backgroundColor='black';
+        target.style.color='white';
+        this.value = 'day';
+      } else{
+        while (i < alist.length){
+          alist[i].style.color='blue';
+          console.log(alist[i])
+          i++;
+        }
+        target.style.backgroundColor='white';
+        target.style.color='black';
+        this.value = 'night';
+      }
+        ">
+  </body>
+</html>
