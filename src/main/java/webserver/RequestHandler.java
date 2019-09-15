@@ -9,6 +9,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.File;
 import java.nio.file.Files;
+import java.util.Collection;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -36,6 +37,7 @@ public class RequestHandler extends Thread {
             // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
         	BufferedReader br = new BufferedReader(new InputStreamReader(in,"UTF-8"));
         	String line = br.readLine();
+        	boolean logined = false;
         	
         	log.debug("request line = {}", line);
         	
@@ -52,6 +54,9 @@ public class RequestHandler extends Thread {
         		if (line.contains("Content-Length")) {
         			contentLength = getContentLength(line);
         		}
+        		if (line.contains("Cookie")) {
+        			logined = isLogin(line);
+        		}
         	}
         	
         	//log.debug("본문 : {}", br.readLine());
@@ -67,7 +72,7 @@ public class RequestHandler extends Thread {
         		DataOutputStream dos = new DataOutputStream(out);
         		response302Header(dos, "/index.html");
         		
-        	}else if (url.contentEquals("/user/login")){
+        	}else if (url.equals("/user/login")){
         		String body = IOUtils.readData(br, contentLength);
         		Map<String, String> params = HttpRequestUtils.parseQueryString(body);
         		User user = DataBase.findUserById(params.get("userId"));
@@ -83,23 +88,50 @@ public class RequestHandler extends Thread {
         			responseResource(out,"/user/login_failed.html");
         		}
         		
+        	}else if (url.equals("/user/list")) {
+        		if (!logined) {
+        			responseResource(out, "/user/login.html");
+        			return;
+        		}
+        		Collection<User> users = DataBase.findAll();
+        		StringBuilder sb = new StringBuilder();
+        		sb.append("<table border='1'>");
+        		for (User user : users) {
+        			sb.append("<tr>");
+        			sb.append("<td>" + user.getUserId() + "</td>");
+        			sb.append("<td>" + user.getName() +  "</td>");
+        			sb.append("<td>" + user.getEmail() +  "</td>");
+        			sb.append("</tr>");
+        		}
+        		sb.append("</table>");
+        		byte[] body = sb.toString().getBytes();
+        		DataOutputStream dos = new DataOutputStream(out);
+        		response200Header(dos, body.length, "table");
+        		responseBody(dos, body);
         	}
         	else{
-	            DataOutputStream dos = new DataOutputStream(out);
-	            byte[] body = Files.readAllBytes(new File("./webapp"+url).toPath());
-	            //byte[] body = "라즈베리로봇 서버".getBytes();
-	            response200Header(dos, body.length, url);
-	            responseBody(dos, body);
+        		responseResource(out, url);
         	}
         } catch (IOException e) {
             log.error(e.getMessage());
         }
     }
-    
+    private boolean isLogin(String line) {
+    	String[] headerTokens = line.split(":");
+    	Map<String, String> cookies = HttpRequestUtils.parseCookies(headerTokens[1].trim());
+    	String value = cookies.get("logined");
+    	log.debug("쿠키에 ';' 들어있나?= {}",value); 
+    	if (value == null) {
+    		return false;
+    	}else {
+    		return Boolean.parseBoolean(value);
+    	}
+    	
+    }
     private void response302LoginSuccessHeader(DataOutputStream dos) {
     	try {
             dos.writeBytes("HTTP/1.1 302 Redirect\r\n");
-            dos.writeBytes("Set_Cookie: logined=true\r\n");
+            dos.writeBytes("Set-Cookie: logined=true\r\n");
             dos.writeBytes("Location: /index.html\r\n");
             dos.writeBytes("\r\n");
 	    }catch (IOException e) {
@@ -136,11 +168,9 @@ public class RequestHandler extends Thread {
 		            dos.writeBytes("HTTP/1.1 200 OK \r\n");
 		            dos.writeBytes("Content-Type: text/css;charset=utf-8\r\n");
 		            dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
-		            dos.writeBytes("\r\n");
-		       
+		            dos.writeBytes("\r\n");		       
 	    	}
 	    	else {
-	    		
 	    		dos.writeBytes("HTTP/1.1 200 OK \r\n");
 	            dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
 	            dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
