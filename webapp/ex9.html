@@ -22,10 +22,19 @@
     <h2>Parameter & Argument</h2>
     <script>
       function sum(left, right){
-        document.write('<p>'+left+right+'</p> <br>');
+        document.write('<p>'+(left+right)+'</p> <br>');
+      }
+      function sumColorRed(left, right){
+        document.write('<div style= "color:red;">' + sum2(left,right) + '</div><br>');
+      }
+      function sum2(left, right){
+        return left+right
       }
       sum(2,3);
       sum(3,4);
+      sumColorRed(2,3);
+      sumColorRed(3,4);
+      document.write(sum2(1,2))
     </script>
     <h2>Return</h2>
   </body>
