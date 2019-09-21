@@ -5,31 +5,38 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script>
+      function linkedSetColor(color){
+        var alist = document.querySelectorAll('a');
+        var i = 0;
+        while (i < alist.length){
+          alist[i].style.color = color;
+          i = i+1;
+        }
+      }
+      function bodySetColor(color){
+        var target = document.querySelector('body')
+        target.style.color = color
+      }
+      function bodySetBackgroundColor(color){
+        document.querySelector('body').style.backgroundColor = color;
+      }
       function day_and_night(self){
         var target = document.querySelector('body')
         var i = 0;
         var alist = document.querySelectorAll('a');
           if (self.value == 'night'){
-            while (i < alist.length){
-              alist[i].style.color='powderblue';
-              console.log(alist[i])
-              i++;
-            }
-
-            target.style.backgroundColor='black';
-            target.style.color='white';
+            linkedSetColor('powderblue');
+            bodySetBackgroundColor('black');
+            bodySetColor('white')
             self.value = 'day';
           } else{
-            while (i < alist.length){
-              alist[i].style.color='blue';
-              console.log(alist[i])
-              i++;
-            }
-            target.style.backgroundColor='white';
-            target.style.color='black';
+            linkedSetColor('blue');
+            bodySetBackgroundColor('white');
+            bodySetColor('black')
             self.value = 'night';
           }
       }
+
     </script>
   </head>
   <body>
