@@ -71,7 +71,7 @@ public class HttpRequest {
 		return requestLine.getPath();
 		
 	}
-	public String getHeader(String header) throws Exception {
+	public String getHeader(String header) {
 		return headers.get(header);
 	}
 	public String getParameter(String param) {
