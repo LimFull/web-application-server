@@ -7,38 +7,70 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import util.HttpRequestUtils;
-
+import util.IOUtils;
 import java.io.BufferedReader;
+import java.io.IOException;
 
 public class HttpRequest {
 	private static final Logger log = LoggerFactory.getLogger(HttpRequest.class);
-	BufferedReader br;
-	//String tokens[];
-	String requestline[];
-	String method;
-	String content;
-	Map<String, String> header = new HashMap<String, String>();
-	public HttpRequest(InputStream in) throws Exception {
-		String line;
-		this.br = new BufferedReader(new InputStreamReader(in, "UTF-8"));
-		line = br.readLine();
-		this.requestline = line.split(" ");
-		this.method = requestline[0];
-		while(!line.equals("")) {
+	
+	
+	private String method;
+	private String path;
+	private Map<String, String> headers = new HashMap<String, String>();
+	private Map<String, String> params = new HashMap<String, String>();
+	
+	public HttpRequest(InputStream in) {
+		try {
+			BufferedReader br = new BufferedReader(new InputStreamReader(in, "UTF-8"));
+			String line = br.readLine();
+			if (line == null) {
+				return;
+			}
+			
+			processRequestLine(line);
 			
 			line = br.readLine();
-			log.debug(line);
-			if (line == null) {
-				break;
+			System.out.println("line = " + line);
+			while(!line.equals("")) {
+				log.debug("header : {}", line);
+				String tokens[]  = line.split(":");
+				headers.put(tokens[0].trim(), tokens[1].trim());
+				line = br.readLine();
+			
+				if(line == null || line.equals("")){
+					break;
+				}
 			}
-			String tokens[]  = line.split(": ");
-			if (!tokens[0].isEmpty()) {
-				this.header.put(tokens[0], tokens[1].trim());
-			}
+			
+			if (method.equals("POST")) {
+				String body = IOUtils.readData(br, Integer.parseInt(headers.get("Content-Length")));
+				log.debug("now body = {}", body);
+				params = HttpRequestUtils.parseQueryString(body);
+			}	
+		} catch (IOException io) {
+			log.error(io.getMessage());
 		}
 		
+		
+	}
+	
+	private void processRequestLine(String requestLine) {
+		log.debug("request line : {}", requestLine);
+		String[] tokens = requestLine.split(" ");
+		method = tokens[0];
+		
 		if (method.equals("POST")) {
-			this.content = br.readLine();
+			path = tokens[1];
+			return;
+		}
+		
+		int index = tokens[1].indexOf("?");
+		if (index == -1) {
+			path = tokens[1];
+		} else {
+			path = tokens[1].substring(0, index);
+			params = HttpRequestUtils.parseQueryString(tokens[1].substring(index+1));
 		}
 	}
 	
@@ -46,30 +78,14 @@ public class HttpRequest {
 		return this.method;
 	}
 	public String getPath() {
-		if (method.equals("GET")) {
-			String urlToken =  this.requestline[1];
-			String token[] = urlToken.split("[?]");
-			return token[0];	
-		} else if (method.equals("POST")) {
-			String urlToken = this.requestline[1];
-			return urlToken;
-		}
-		return "";
+		return path;
 		
 	}
 	public String getHeader(String header) throws Exception {
-		return this.header.get(header);
+		return headers.get(header);
 	}
 	public String getParameter(String param) {
-		if (method.equals("GET")) {
-			String paramtoken[] = this.requestline[1].split("[?]");
-			Map<String, String> params = HttpRequestUtils.parseQueryString(paramtoken[1]);
-			return params.get(param);
-		} else if (method.equals("POST")) {
-			Map<String, String> params = HttpRequestUtils.parseQueryString(this.content);
-			return params.get(param);
-		}
-		return "";
+		return params.get(param);
 		
 	}
 }
