@@ -8,6 +8,8 @@ import org.slf4j.LoggerFactory;
 
 import util.HttpRequestUtils;
 import util.IOUtils;
+import webserver.RequestLine.HttpMethod;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 
@@ -45,7 +47,7 @@ public class HttpRequest {
 				}
 			}
 			
-			if (getMethod().equals("POST")) {
+			if (getMethod() == HttpMethod.POST) {
 				String body = IOUtils.readData(br, Integer.parseInt(headers.get("Content-Length")));
 				log.debug("now body = {}", body);
 				params = HttpRequestUtils.parseQueryString(body);
@@ -59,26 +61,10 @@ public class HttpRequest {
 		
 	}
 	
-	private void processRequestLine(String requestLine) {
-		log.debug("request line : {}", requestLine);
-		String[] tokens = requestLine.split(" ");
-		method = tokens[0];
-		
-		if (method.equals("POST")) {
-			path = tokens[1];
-			return;
-		}
-		
-		int index = tokens[1].indexOf("?");
-		if (index == -1) {
-			path = tokens[1];
-		} else {
-			path = tokens[1].substring(0, index);
-			params = HttpRequestUtils.parseQueryString(tokens[1].substring(index+1));
-		}
-	}
+
+
 	
-	public String getMethod() {
+	public HttpMethod getMethod() {
 		return requestLine.getMethod();
 	}
 	public String getPath() {

@@ -10,16 +10,17 @@ import util.HttpRequestUtils;
 
 public class RequestLine {
 	private static Logger log = LoggerFactory.getLogger(RequestLine.class);
-	private String method;
+	private HttpMethod method;
 	private String path;
 	private Map<String, String> params = new HashMap<String, String>();
+	
 	
 	public RequestLine(String requestLine) {
 		log.debug("request line : {}", requestLine);
 		String[] tokens = requestLine.split(" ");
-		method = tokens[0];
+		method = HttpMethod.valueOf(tokens[0]);
 		
-		if (method.equals("POST")) {
+		if (method.isPost()) {
 			path = tokens[1];
 			return;
 		}
@@ -33,11 +34,20 @@ public class RequestLine {
 		}
 	}
 	
+	public enum HttpMethod{
+		GET,
+		POST;
+		
+		public boolean isPost() {
+			return (this == POST);
+		}
+	}
+	
 	public String getPath() {
 		return path;
 	}
 	
-	public String getMethod() {
+	public HttpMethod getMethod() {
 		return method;
 	}
 	
