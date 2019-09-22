@@ -19,6 +19,7 @@ public class HttpRequest {
 	private String path;
 	private Map<String, String> headers = new HashMap<String, String>();
 	private Map<String, String> params = new HashMap<String, String>();
+	private RequestLine requestLine;
 	
 	public HttpRequest(InputStream in) {
 		try {
@@ -28,7 +29,8 @@ public class HttpRequest {
 				return;
 			}
 			
-			processRequestLine(line);
+			requestLine = new RequestLine(line);
+			
 			
 			line = br.readLine();
 			System.out.println("line = " + line);
@@ -43,11 +45,13 @@ public class HttpRequest {
 				}
 			}
 			
-			if (method.equals("POST")) {
+			if (getMethod().equals("POST")) {
 				String body = IOUtils.readData(br, Integer.parseInt(headers.get("Content-Length")));
 				log.debug("now body = {}", body);
 				params = HttpRequestUtils.parseQueryString(body);
-			}	
+			} else {
+				params = requestLine.getParams();
+			}
 		} catch (IOException io) {
 			log.error(io.getMessage());
 		}
@@ -75,10 +79,10 @@ public class HttpRequest {
 	}
 	
 	public String getMethod() {
-		return this.method;
+		return requestLine.getMethod();
 	}
 	public String getPath() {
-		return path;
+		return requestLine.getPath();
 		
 	}
 	public String getHeader(String header) throws Exception {
