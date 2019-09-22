@@ -1,3 +1,4 @@
+package webserver;
 import static org.junit.Assert.assertEquals;
 
 import java.io.*;
@@ -11,10 +12,21 @@ public class HttpRequestTest {
 	
 	@Test
 	public void request_Get() throws Exception{
-		InputStream in = new FileInputStream(new File(testDirectory + "Http_Get.txt"));
+		InputStream in = new FileInputStream(new File(testDirectory + "Http_GET.txt"));
 		HttpRequest request = new HttpRequest(in);
 		
 		assertEquals("GET", request.getMethod());
+		assertEquals("/user/create", request.getPath());
+		assertEquals("keep-alive", request.getHeader("Connection"));
+		assertEquals("full7002", request.getParameter("userId"));
+	}
+	
+	@Test
+	public void request_Post() throws Exception{
+		InputStream in = new FileInputStream(new File(testDirectory + "Http_POST.txt"));
+		HttpRequest request = new HttpRequest(in);
+		
+		assertEquals("POST", request.getMethod());
 		assertEquals("/user/create", request.getPath());
 		assertEquals("keep-alive", request.getHeader("Connection"));
 		assertEquals("full7002", request.getParameter("userId"));
