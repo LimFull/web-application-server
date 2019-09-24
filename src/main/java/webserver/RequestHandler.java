@@ -38,7 +38,8 @@ public class RequestHandler extends Thread {
         	HttpRequest request = new HttpRequest(in);
         	String path = getDefaultPath(request.getPath());
         	
-        	int contentLength = 0;
+        	HttpResponse response = new HttpResponse(out);
+        	
         	
         	if (path.equals("/user/create")) {
         		User user = new User(
