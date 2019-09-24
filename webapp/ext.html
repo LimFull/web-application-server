@@ -5,34 +5,38 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script>
-      function linkedSetColor(color){
-        var alist = document.querySelectorAll('a');
-        var i = 0;
-        while (i < alist.length){
-          alist[i].style.color = color;
-          i = i+1;
+      var Body = {
+        SetColor : function(color){
+          document.querySelector('body').style.color = color;
+        },
+        SetBackgroundColor: function(color) {
+          document.querySelector('body').style.backgroundColor = color;
         }
       }
-      function bodySetColor(color){
-        var target = document.querySelector('body')
-        target.style.color = color
-      }
-      function bodySetBackgroundColor(color){
-        document.querySelector('body').style.backgroundColor = color;
+
+      var Links = {
+        SetColor : function(color){
+          var alist = document.querySelectorAll('a');
+          var i = 0;
+          while (i < alist.length){
+            alist[i].style.color = color;
+            i = i + 1;
+          }
+        }
       }
       function day_and_night(self){
         var target = document.querySelector('body')
         var i = 0;
         var alist = document.querySelectorAll('a');
           if (self.value == 'night'){
-            linkedSetColor('powderblue');
-            bodySetBackgroundColor('black');
-            bodySetColor('white')
+            Links.SetColor('powderblue');
+            Body.SetBackgroundColor('black');
+            Body.SetColor('white')
             self.value = 'day';
           } else{
-            linkedSetColor('blue');
-            bodySetBackgroundColor('white');
-            bodySetColor('black')
+            Links.SetColor('blue');
+            Body.SetBackgroundColor('white');
+            Body.SetColor('black')
             self.value = 'night';
           }
       }
