@@ -24,6 +24,16 @@ public class HttpResponse {
 		dos = new DataOutputStream(out);
 	}
 	
+	public void forwardBody(String str) {
+		
+		byte[] body = str.getBytes();
+		headers.put("Content-Type", "text/html;charset=utf-8");
+		headers.put("Content-Length", body.length + "");
+		response200Header();
+		responseBody(body);
+		
+	}
+	
 	public void forward(String url) {
 		try {
 			byte[] body = Files.readAllBytes(new File("./webapp"+url).toPath());
@@ -48,7 +58,7 @@ public class HttpResponse {
 	private void processHeaders() {
 		try {
 			for (String key: headers.keySet()) {  // Set<String> keys = headers.keySet();
-				dos.writeBytes(key + ": " + headers.get(key)+" /r/n");
+				dos.writeBytes(key + ": " + headers.get(key)+" \r\n");
 			}
 		}
 		catch (IOException e) {
@@ -60,7 +70,7 @@ public class HttpResponse {
 	    	
     		dos.writeBytes("HTTP/1.1 200 OK \r\n");
     		processHeaders();
-    		dos.writeBytes("/r/n");
+    		dos.writeBytes("\r\n");
     	
 	    }catch (IOException e) {
     		log.error(e.getMessage());
@@ -69,11 +79,14 @@ public class HttpResponse {
     private void responseBody(byte[] body) {
         try {
             dos.write(body, 0, body.length);
-            dos.writeBytes("/r/n");
+            dos.writeBytes("\r\n");
             dos.flush();
         } catch (IOException e) {
             log.error(e.getMessage());
         }
+    }
+    public void setHeader(String key, String value) {
+    	headers.put(key, value);
     }
 	public void sendRedirect(String url) {
 		try {
