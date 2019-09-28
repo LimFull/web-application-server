@@ -7,9 +7,9 @@ import db.DataBase;
 import model.User;
 import util.HttpRequestUtils;
 
-public class ListUserController implements Controller{
+public class ListUserController extends AbstractController{
 	@Override
-	public void service(HttpRequest request, HttpResponse response) {
+	public void doGet(HttpRequest request, HttpResponse response) {
 		if (!isLogin(request.getHeader("Cookie"))) {
 			response.sendRedirect("/user/login.html");
 			
@@ -28,6 +28,7 @@ public class ListUserController implements Controller{
 		sb.append("</table>");
 		response.forwardBody(sb.toString());
 	}
+	
     private boolean isLogin(String cookieValue) {
     	Map<String, String> cookies = HttpRequestUtils.parseCookies(cookieValue);
     	String value = cookies.get("logined");
