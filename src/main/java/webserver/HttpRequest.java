@@ -61,8 +61,14 @@ public class HttpRequest {
 		
 	}
 	
+	public HttpSession getSession() {
+		return HttpSessions.getSession(getCookies().getCookie("JSESSIONID"));
+	}
 
-
+    public HttpCookie getCookies() {
+    	return new HttpCookie(getHeader("Cookie"));
+    }
+  
 	
 	public HttpMethod getMethod() {
 		return requestLine.getMethod();

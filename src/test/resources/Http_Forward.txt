@@ -1,5 +1,8 @@
 HTTP/1.1 200 OK 
-Content-Length: 10500 /r/nContent-Type: text/html;charset=utf-8 /r/n/r/n<!DOCTYPE html>
+Content-Length: 10500 
+Content-Type: text/html;charset=utf-8 
+
+<!DOCTYPE html>
 <html lang="kr">
 	<head>
 		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
@@ -223,4 +226,4 @@ Content-Length: 10500 /r/nContent-Type: text/html;charset=utf-8 /r/n/r/n<!DOCTYP
 <script src="js/bootstrap.min.js"></script>
 <script src="js/scripts.js"></script>
 	</body>
-</html>/r/n
+</html>

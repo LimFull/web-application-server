@@ -3,10 +3,10 @@ package webserver;
 import db.DataBase;
 import model.User;
 
-public class LoginController implements Controller{
+public class LoginController extends AbstractController{
 
 	@Override
-	public void service(HttpRequest request, HttpResponse response) {
+	protected void doPost(HttpRequest request, HttpResponse response) {
 		User user = DataBase.findUserById(request.getParameter("userId"));
 		if (user == null) {
 			response.sendRedirect("/user/login_failed.html");
@@ -14,12 +14,13 @@ public class LoginController implements Controller{
 		}
 		
 		if (user.getPassword().equals(request.getParameter("password"))){
-			response.setHeader("Set-Cookie", "logined = true");
+			HttpSession session = request.getSession();
+			session.setAttribute("user", user);
 			response.sendRedirect("/index.html");
 		}else {
 			response.sendRedirect("/user/login_failed.html");
 		}
-		
 	}
+	
 
 }

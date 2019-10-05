@@ -5,9 +5,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.Map;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import util.HttpRequestUtils;
 
 
 
@@ -27,8 +31,11 @@ public class RequestHandler extends Thread {
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
         	HttpRequest request = new HttpRequest(in);
-        	
         	HttpResponse response = new HttpResponse(out);
+        	
+        	if (request.getCookies().getCookie("JSESSIONID") == null) {
+        		response.setHeader("Set-Cookie", "JSESSIONID=" + UUID.randomUUID());
+        	}
         	
         	Controller controller = RequestMapping.getController(request.getPath());
         	if (controller == null) {
@@ -50,6 +57,5 @@ public class RequestHandler extends Thread {
     	}
     	return path;
     }
-
-
+    
 }
